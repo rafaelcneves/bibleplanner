@@ -1,11 +1,11 @@
-import 'package:bibleplanner/home_page/home_page.dart';
+import 'package:bibleplanner/pages/home_page/home_page.dart';
+import 'package:bibleplanner/stores/bible_store.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 void main() {
   GetIt getIt = GetIt.instance;
-  // getIt.registerSingleton<PokeApiStore>(PokeApiStore());
-  // getIt.registerSingleton<PokeApiV2Store>(PokeApiV2Store());
+  getIt.registerSingleton<BibleStore>(BibleStore());
   runApp(MyApp());
 }
 
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Planner de leitura da Bíblia',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        // visualDensity: VisualDensity.adaptivePlatformDensity,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),
     );
