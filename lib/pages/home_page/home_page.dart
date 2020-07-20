@@ -53,25 +53,32 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     itemCount: _bibleStore.books.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(color: Colors.black12),
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: Duration(milliseconds: 375),
+                        child: SlideAnimation(
+                          verticalOffset: 50.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(color: Colors.black12),
+                              ),
+                            ),
+                            child: ListTile(
+                              title: Text(_books[index].name),
+                              subtitle: Text(_books[index].author),
+                              trailing: Text(_books[index].chapters.toString()),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          ChaptersPage(book: _books[index]),
+                                      fullscreenDialog: true,
+                                    ));
+                              },
+                            ),
                           ),
-                        ),
-                        child: ListTile(
-                          title: Text(_books[index].name),
-                          subtitle: Text(_books[index].author),
-                          trailing: Text(_books[index].chapters.toString()),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ChaptersPage(),
-                                  fullscreenDialog: true,
-                                ));
-                          },
                         ),
                       );
                     },
