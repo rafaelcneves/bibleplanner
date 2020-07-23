@@ -28,21 +28,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: ThemeData.light().iconTheme,
-        textTheme: ThemeData.light().textTheme,
-        title: Text(
-          'Planner de leitura da Bíblia',
-          style: TextStyle(color: Colors.black87, fontFamily: 'Google'),
-        ),
+        title: Text('Planner de leitura da Bíblia'),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {},
         ),
       ),
-      backgroundColor: Colors.white,
       body: Observer(
         name: 'BooksList',
         builder: (context) {

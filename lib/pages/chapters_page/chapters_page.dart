@@ -1,55 +1,83 @@
 import 'package:bibleplanner/models/book.dart';
+import 'package:bibleplanner/models/planner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class ChaptersPage extends StatelessWidget {
+class ChaptersPage extends StatefulWidget {
   final Book book;
 
   const ChaptersPage({Key key, this.book}) : super(key: key);
 
   @override
+  _ChaptersPageState createState() => _ChaptersPageState();
+}
+
+class _ChaptersPageState extends State<ChaptersPage> {
+  Planner _planner;
+  List<int> _checked;
+
+  @override
+  void initState() {
+    var _box = Hive.box('planners');
+    _planner = _box.getAt(0);
+
+    if (_planner.bookChapters[widget.book.abbrev.pt] == null) {
+      _planner.bookChapters[widget.book.abbrev.pt] = [];
+    }
+
+    _checked = _planner.bookChapters[widget.book.abbrev.pt].cast<int>();
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: ThemeData.light().iconTheme,
-        textTheme: ThemeData.light().textTheme,
-        title: Text(
-          book.name,
-          style: TextStyle(color: Colors.black87, fontFamily: 'Google'),
-        ),
+        title: Text(widget.book.name),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      backgroundColor: Colors.white,
       body: AnimationLimiter(
         child: GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 5,
           children: List.generate(
-            book.chapters,
+            widget.book.chapters,
             (int index) {
+              int _chapter = index + 1;
               return AnimationConfiguration.staggeredGrid(
                 position: index,
                 duration: const Duration(milliseconds: 375),
-                columnCount: 4,
+                columnCount: 5,
                 child: ScaleAnimation(
                   child: FadeInAnimation(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: GestureDetector(
                         child: Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(5),
                               border:
                                   Border.all(width: 1, color: Colors.black12),
-                              color: Colors.grey[100]),
-                          child: Center(child: Text((index + 1).toString())),
+                              color: _checked.indexOf(_chapter) >= 0
+                                  ? Colors.green[200]
+                                  : Colors.grey[100]),
+                          child: Center(child: Text((_chapter).toString())),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          setState(() {
+                            if (_checked.indexOf(_chapter) >= 0) {
+                              _checked.remove(_chapter);
+                            } else {
+                              _checked.add(_chapter);
+                            }
+                          });
+                        },
                       ),
                     ),
                   ),

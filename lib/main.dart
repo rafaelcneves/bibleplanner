@@ -1,9 +1,25 @@
+import 'package:bibleplanner/models/planner.dart';
 import 'package:bibleplanner/pages/home_page/home_page.dart';
 import 'package:bibleplanner/stores/bible_store.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  runApp(Center(child: CircularProgressIndicator()));
+  await Hive.initFlutter();
+  Hive.registerAdapter<Planner>(PlannerAdapter());
+  var box = await Hive.openBox('planners');
+
+  if (!box.containsKey(0)) {
+    Planner planner = Planner()
+      ..name = 'Primeiro'
+      ..bookChapters = {};
+
+    box.add(planner);
+  }
+
   GetIt getIt = GetIt.instance;
   getIt.registerSingleton<BibleStore>(BibleStore());
   runApp(MyApp());
@@ -16,8 +32,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Planner de leitura da Bíblia',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.light().copyWith(
+        appBarTheme: AppBarTheme(
+          color: Colors.white,
+          elevation: 0,
+          textTheme: TextTheme(
+            headline6: TextStyle(
+              color: Colors.black87,
+              fontFamily: 'Google',
+              fontSize: 20,
+            ),
+          ),
+          iconTheme: IconThemeData(color: Colors.black87),
+        ),
+        scaffoldBackgroundColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),
