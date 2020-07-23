@@ -59,15 +59,48 @@ class _ChaptersPageState extends State<ChaptersPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: GestureDetector(
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.easeInOut,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border:
-                                  Border.all(width: 1, color: Colors.black12),
-                              color: _checked.indexOf(_chapter) >= 0
-                                  ? Colors.green[200]
-                                  : Colors.grey[100]),
-                          child: Center(child: Text((_chapter).toString())),
+                            gradient: _checked.indexOf(_chapter) >= 0
+                                ? LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                        Colors.green[200],
+                                        Colors.green[300]
+                                      ])
+                                : LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                        Colors.grey[200],
+                                        Colors.grey[300]
+                                      ]),
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(width: 1, color: Colors.black12),
+                          ),
+                          child: Center(
+                              child: Column(
+                            children: [
+                              Checkbox(
+                                activeColor: Colors.transparent,
+                                checkColor: Colors.black87,
+                                value: _checked.indexOf(_chapter) >= 0,
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (_checked.indexOf(_chapter) >= 0) {
+                                      _checked.remove(_chapter);
+                                    } else {
+                                      _checked.add(_chapter);
+                                    }
+                                  });
+                                },
+                              ),
+                              Text((_chapter).toString()),
+                            ],
+                          )),
                         ),
                         onTap: () {
                           setState(() {

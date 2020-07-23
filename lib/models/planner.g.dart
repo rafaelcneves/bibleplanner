@@ -8,13 +8,13 @@ part of 'planner.dart';
 
 class PlannerAdapter extends TypeAdapter<Planner> {
   @override
-  final typeId = 0;
+  final int typeId = 0;
 
   @override
   Planner read(BinaryReader reader) {
-    var numOfFields = reader.readByte();
-    var fields = <int, dynamic>{
-      for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    final int numOfFields = reader.readByte();
+    final Map<int, dynamic> fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Planner()
       ..name = fields[0] as String
@@ -31,4 +31,14 @@ class PlannerAdapter extends TypeAdapter<Planner> {
       ..writeByte(1)
       ..write(obj.bookChapters);
   }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlannerAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
