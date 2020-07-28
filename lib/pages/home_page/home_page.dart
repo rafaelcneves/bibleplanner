@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _bibleStore = GetIt.instance<BibleStore>();
+    _bibleStore.setCurrentPlanner();
 
     if (_bibleStore.books == null) {
       _bibleStore.loadBooks();
@@ -39,12 +40,17 @@ class _HomePageState extends State<HomePage> {
         name: 'BooksList',
         builder: (context) {
           List<Book> _books = _bibleStore.books;
+          Map<String, List<int>> _bookChapters =
+              _bibleStore.currentPlannerBookChapters;
 
           return (_books != null)
               ? AnimationLimiter(
                   child: ListView.builder(
                     itemCount: _bibleStore.books.length,
                     itemBuilder: (context, index) {
+                      Book _book = _books[index];
+                      List<int> _checked = _bookChapters[_book.abbrev.pt] ?? [];
+
                       return AnimationConfiguration.staggeredList(
                         position: index,
                         duration: Duration(milliseconds: 375),
@@ -57,15 +63,16 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             child: ListTile(
-                              title: Text(_books[index].name),
-                              subtitle: Text(_books[index].author),
-                              trailing: Text(_books[index].chapters.toString()),
+                              title: Text(_book.name),
+                              subtitle: Text(_book.author),
+                              trailing: Text(
+                                  "${_checked.length}/${_book.chapters.toString()}"),
                               onTap: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          ChaptersPage(book: _books[index]),
+                                          ChaptersPage(book: _book),
                                       fullscreenDialog: true,
                                     ));
                               },

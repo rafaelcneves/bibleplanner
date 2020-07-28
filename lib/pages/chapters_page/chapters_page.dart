@@ -1,9 +1,9 @@
 import 'package:bibleplanner/models/book.dart';
 import 'package:bibleplanner/models/planner.dart';
+import 'package:bibleplanner/stores/bible_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:get_it/get_it.dart';
 
 class ChaptersPage extends StatefulWidget {
   final Book book;
@@ -15,13 +15,14 @@ class ChaptersPage extends StatefulWidget {
 }
 
 class _ChaptersPageState extends State<ChaptersPage> {
+  BibleStore _bibleStore;
   Planner _planner;
   List<int> _checked;
 
   @override
   void initState() {
-    var _box = Hive.box('planners');
-    _planner = _box.getAt(0);
+    _bibleStore = GetIt.instance<BibleStore>();
+    _planner = _bibleStore.currentPlanner;
 
     if (_planner.bookChapters[widget.book.abbrev.pt] == null) {
       _planner.bookChapters[widget.book.abbrev.pt] = [];
@@ -52,7 +53,7 @@ class _ChaptersPageState extends State<ChaptersPage> {
               int _chapter = index + 1;
               return AnimationConfiguration.staggeredGrid(
                 position: index,
-                duration: const Duration(milliseconds: 375),
+                duration: const Duration(milliseconds: 150),
                 columnCount: 5,
                 child: ScaleAnimation(
                   child: FadeInAnimation(
@@ -60,7 +61,7 @@ class _ChaptersPageState extends State<ChaptersPage> {
                       padding: const EdgeInsets.all(4.0),
                       child: GestureDetector(
                         child: AnimatedContainer(
-                          duration: Duration(milliseconds: 500),
+                          duration: Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                           decoration: BoxDecoration(
                             gradient: _checked.indexOf(_chapter) >= 0
@@ -82,25 +83,29 @@ class _ChaptersPageState extends State<ChaptersPage> {
                             border: Border.all(width: 1, color: Colors.black12),
                           ),
                           child: Center(
-                              child: Column(
-                            children: [
-                              Checkbox(
-                                activeColor: Colors.transparent,
-                                checkColor: Colors.black87,
-                                value: _checked.indexOf(_chapter) >= 0,
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (_checked.indexOf(_chapter) >= 0) {
-                                      _checked.remove(_chapter);
-                                    } else {
-                                      _checked.add(_chapter);
-                                    }
-                                  });
-                                },
-                              ),
-                              Text((_chapter).toString()),
-                            ],
-                          )),
+                            child: Column(
+                              children: [
+                                Checkbox(
+                                  activeColor: Colors.transparent,
+                                  checkColor: Colors.black87,
+                                  value: _checked.indexOf(_chapter) >= 0,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (_checked.indexOf(_chapter) >= 0) {
+                                        _checked.remove(_chapter);
+                                      } else {
+                                        _checked.add(_chapter);
+                                      }
+                                      _planner.save();
+                                      _bibleStore
+                                          .updateCurrentPlannerBookChapters();
+                                    });
+                                  },
+                                ),
+                                Text((_chapter).toString()),
+                              ],
+                            ),
+                          ),
                         ),
                         onTap: () {
                           setState(() {
@@ -109,6 +114,8 @@ class _ChaptersPageState extends State<ChaptersPage> {
                             } else {
                               _checked.add(_chapter);
                             }
+                            _planner.save();
+                            _bibleStore.updateCurrentPlannerBookChapters();
                           });
                         },
                       ),

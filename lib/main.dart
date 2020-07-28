@@ -7,7 +7,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
-  runApp(Center(child: CircularProgressIndicator()));
   await Hive.initFlutter();
   Hive.registerAdapter<Planner>(PlannerAdapter());
   var box = await Hive.openBox('planners');

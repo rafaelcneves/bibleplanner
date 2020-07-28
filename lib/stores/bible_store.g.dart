@@ -9,31 +9,77 @@ part of 'bible_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$BibleStore on _BibleStoreBase, Store {
-  Computed<List<Book>> _$booksComputed;
+  final _$booksAtom = Atom(name: '_BibleStoreBase.books');
 
   @override
-  List<Book> get books =>
-      (_$booksComputed ??= Computed<List<Book>>(() => super.books,
-              name: '_BibleStoreBase.books'))
-          .value;
-
-  final _$_booksAtom = Atom(name: '_BibleStoreBase._books');
-
-  @override
-  List<Book> get _books {
-    _$_booksAtom.reportRead();
-    return super._books;
+  List<Book> get books {
+    _$booksAtom.reportRead();
+    return super.books;
   }
 
   @override
-  set _books(List<Book> value) {
-    _$_booksAtom.reportWrite(value, super._books, () {
-      super._books = value;
+  set books(List<Book> value) {
+    _$booksAtom.reportWrite(value, super.books, () {
+      super.books = value;
+    });
+  }
+
+  final _$currentPlannerAtom = Atom(name: '_BibleStoreBase.currentPlanner');
+
+  @override
+  Planner get currentPlanner {
+    _$currentPlannerAtom.reportRead();
+    return super.currentPlanner;
+  }
+
+  @override
+  set currentPlanner(Planner value) {
+    _$currentPlannerAtom.reportWrite(value, super.currentPlanner, () {
+      super.currentPlanner = value;
+    });
+  }
+
+  final _$currentPlannerBookChaptersAtom =
+      Atom(name: '_BibleStoreBase.currentPlannerBookChapters');
+
+  @override
+  Map<String, List<int>> get currentPlannerBookChapters {
+    _$currentPlannerBookChaptersAtom.reportRead();
+    return super.currentPlannerBookChapters;
+  }
+
+  @override
+  set currentPlannerBookChapters(Map<String, List<int>> value) {
+    _$currentPlannerBookChaptersAtom
+        .reportWrite(value, super.currentPlannerBookChapters, () {
+      super.currentPlannerBookChapters = value;
     });
   }
 
   final _$_BibleStoreBaseActionController =
       ActionController(name: '_BibleStoreBase');
+
+  @override
+  void setCurrentPlanner() {
+    final _$actionInfo = _$_BibleStoreBaseActionController.startAction(
+        name: '_BibleStoreBase.setCurrentPlanner');
+    try {
+      return super.setCurrentPlanner();
+    } finally {
+      _$_BibleStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void updateCurrentPlannerBookChapters() {
+    final _$actionInfo = _$_BibleStoreBaseActionController.startAction(
+        name: '_BibleStoreBase.updateCurrentPlannerBookChapters');
+    try {
+      return super.updateCurrentPlannerBookChapters();
+    } finally {
+      _$_BibleStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   dynamic loadBooks() {
@@ -49,7 +95,9 @@ mixin _$BibleStore on _BibleStoreBase, Store {
   @override
   String toString() {
     return '''
-books: ${books}
+books: ${books},
+currentPlanner: ${currentPlanner},
+currentPlannerBookChapters: ${currentPlannerBookChapters}
     ''';
   }
 }
