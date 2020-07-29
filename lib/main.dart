@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       title: 'Planner de leitura da Bíblia',
       theme: ThemeData.light().copyWith(
         appBarTheme: AppBarTheme(
-          color: Colors.white,
+          color: Colors.grey[100],
           elevation: 0,
           textTheme: TextTheme(
             headline6: TextStyle(
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           ),
           iconTheme: IconThemeData(color: Colors.black87),
         ),
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: Colors.grey[100],
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),

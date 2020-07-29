@@ -31,10 +31,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Planner de leitura da Bíblia'),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {},
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.menu),
+        //   onPressed: () {},
+        // ),
       ),
       body: Observer(
         name: 'BooksList',
