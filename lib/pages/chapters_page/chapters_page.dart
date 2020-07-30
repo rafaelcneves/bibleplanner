@@ -1,3 +1,4 @@
+import 'package:bibleplanner/components/alert_component.dart';
 import 'package:bibleplanner/models/book.dart';
 import 'package:bibleplanner/models/planner.dart';
 import 'package:bibleplanner/stores/bible_store.dart';
@@ -47,11 +48,22 @@ class _ChaptersPageState extends State<ChaptersPage> {
           IconButton(
             icon: Icon(Icons.clear_all),
             onPressed: () {
-              setState(() {
-                _checked.clear();
-                _planner.save();
-                _bibleStore.updateCurrentPlannerBookChapters();
-              });
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertComponent(
+                      title: Text('Alerta'),
+                      content: Text(
+                          'Deseja realmente remover seu progresso de leitura neste livro?'),
+                      confirm: () {
+                        setState(() {
+                          _checked.clear();
+                          _planner.save();
+                          _bibleStore.updateCurrentPlannerBookChapters();
+                        });
+                      },
+                    );
+                  });
             },
           )
         ],

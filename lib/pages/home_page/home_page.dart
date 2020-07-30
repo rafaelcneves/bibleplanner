@@ -1,3 +1,4 @@
+import 'package:bibleplanner/components/alert_component.dart';
 import 'package:bibleplanner/models/book.dart';
 import 'package:bibleplanner/pages/chapters_page/chapters_page.dart';
 import 'package:bibleplanner/stores/bible_store.dart';
@@ -35,6 +36,27 @@ class _HomePageState extends State<HomePage> {
         //   icon: Icon(Icons.menu),
         //   onPressed: () {},
         // ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.clear_all),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertComponent(
+                      title: Text('Alerta'),
+                      content: Text(
+                          'Deseja realmente remover todo seu progresso de leitura?'),
+                      confirm: () {
+                        _bibleStore.currentPlanner.bookChapters.clear();
+                        _bibleStore.currentPlanner.save();
+                        _bibleStore.updateCurrentPlannerBookChapters();
+                      },
+                    );
+                  });
+            },
+          )
+        ],
       ),
       body: Observer(
         name: 'BooksList',
