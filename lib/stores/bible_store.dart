@@ -29,6 +29,18 @@ abstract class _BibleStoreBase with Store {
   }
 
   @action
+  void clearChecked({String bookAbbrev}) {
+    currentPlanner.clearChecked(bookAbbrev: bookAbbrev);
+    this.updateCurrentPlannerBookChapters();
+  }
+
+  @action
+  void toggleChecked({String bookAbbrev, int chapter}) {
+    currentPlanner.toggleChecked(bookAbbrev: bookAbbrev, chapter: chapter);
+    this.updateCurrentPlannerBookChapters();
+  }
+
+  @action
   loadBooks() {
     fetchBooks().then((data) => books = data);
   }

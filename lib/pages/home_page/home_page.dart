@@ -48,9 +48,7 @@ class _HomePageState extends State<HomePage> {
                       content: Text(
                           'Deseja realmente remover todo seu progresso de leitura?'),
                       confirm: () {
-                        _bibleStore.currentPlanner.bookChapters.clear();
-                        _bibleStore.currentPlanner.save();
-                        _bibleStore.updateCurrentPlannerBookChapters();
+                        _bibleStore.clearChecked();
                       },
                     );
                   });

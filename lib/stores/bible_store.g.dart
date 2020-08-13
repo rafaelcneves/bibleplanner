@@ -82,6 +82,28 @@ mixin _$BibleStore on _BibleStoreBase, Store {
   }
 
   @override
+  void clearChecked({String bookAbbrev}) {
+    final _$actionInfo = _$_BibleStoreBaseActionController.startAction(
+        name: '_BibleStoreBase.clearChecked');
+    try {
+      return super.clearChecked(bookAbbrev: bookAbbrev);
+    } finally {
+      _$_BibleStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void toggleChecked({String bookAbbrev, int chapter}) {
+    final _$actionInfo = _$_BibleStoreBaseActionController.startAction(
+        name: '_BibleStoreBase.toggleChecked');
+    try {
+      return super.toggleChecked(bookAbbrev: bookAbbrev, chapter: chapter);
+    } finally {
+      _$_BibleStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic loadBooks() {
     final _$actionInfo = _$_BibleStoreBaseActionController.startAction(
         name: '_BibleStoreBase.loadBooks');
