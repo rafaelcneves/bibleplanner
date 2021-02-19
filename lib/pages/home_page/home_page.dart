@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get_it/get_it.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,9 +16,33 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   BibleStore _bibleStore;
 
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    // nonPersonalizedAds: true,
+    keywords: ['Bible', 'Checklist', 'Productivity'],
+  );
+
+  BannerAd _bannerAd;
+
+  BannerAd createBannerAd() {
+    return BannerAd(
+      adUnitId: 'ca-app-pub-8689692734643401/2750324877',
+      // adUnitId: BannerAd.testAdUnitId,
+      size: AdSize.banner,
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("BannerAd $event");
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
+    _bannerAd = createBannerAd()
+      ..load()
+      ..show();
+
     _bibleStore = GetIt.instance<BibleStore>();
     _bibleStore.setCurrentPlanner();
 
@@ -27,15 +52,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    _bannerAd.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Planner de leitura da Bíblia'),
         centerTitle: true,
-        // leading: IconButton(
-        //   icon: Icon(Icons.menu),
-        //   onPressed: () {},
-        // ),
         actions: [
           IconButton(
             icon: Icon(Icons.clear_all),
@@ -62,10 +89,13 @@ class _HomePageState extends State<HomePage> {
           List<Book> _books = _bibleStore.books;
           Map<String, List<int>> _bookChapters =
               _bibleStore.currentPlannerBookChapters;
+          double paddingBottom =
+              _bannerAd != null ? _bannerAd.size.height.toDouble() : 0.0;
 
           return (_books != null)
               ? AnimationLimiter(
                   child: ListView.builder(
+                    padding: EdgeInsets.only(bottom: paddingBottom),
                     itemCount: _bibleStore.books.length,
                     itemBuilder: (context, index) {
                       Book _book = _books[index];
