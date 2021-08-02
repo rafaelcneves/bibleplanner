@@ -20,24 +20,25 @@ List<Book> parseBooks(String responseBody) {
 }
 
 class Book {
-  Abbrev abbrev;
-  String author;
-  int chapters;
-  String group;
-  String name;
-  String testament;
+  late Abbrev abbrev;
+  late String author;
+  late int chapters;
+  late String group;
+  late String name;
+  late String testament;
 
   Book(
-      {this.abbrev,
-      this.author,
-      this.chapters,
-      this.group,
-      this.name,
-      this.testament});
+      {required this.abbrev,
+      required this.author,
+      required this.chapters,
+      required this.group,
+      required this.name,
+      required this.testament});
 
   Book.fromJson(Map<String, dynamic> json) {
-    abbrev =
-        json['abbrev'] != null ? new Abbrev.fromJson(json['abbrev']) : null;
+    abbrev = json['abbrev'] != null
+        ? new Abbrev.fromJson(json['abbrev'])
+        : new Abbrev();
     author = json['author'];
     chapters = json['chapters'];
     group = json['group'];

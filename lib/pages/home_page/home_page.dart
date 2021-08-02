@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  BibleStore _bibleStore;
+  late BibleStore _bibleStore;
 
   @override
   void initState() {
@@ -59,14 +59,14 @@ class _HomePageState extends State<HomePage> {
       body: Observer(
         name: 'BooksList',
         builder: (context) {
-          List<Book> _books = _bibleStore.books;
+          List<Book> _books = (_bibleStore.books ?? []);
           Map<String, List<int>> _bookChapters =
-              _bibleStore.currentPlannerBookChapters;
+              (_bibleStore.currentPlannerBookChapters ?? {});
 
-          return (_books != null)
+          return _books.isNotEmpty
               ? AnimationLimiter(
                   child: ListView.builder(
-                    itemCount: _bibleStore.books.length,
+                    itemCount: _bibleStore.books?.length,
                     itemBuilder: (context, index) {
                       Book _book = _books[index];
                       List<int> _checked = _bookChapters[_book.abbrev.pt] ?? [];

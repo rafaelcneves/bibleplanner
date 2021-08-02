@@ -8,13 +8,13 @@ class BibleStore = _BibleStoreBase with _$BibleStore;
 
 abstract class _BibleStoreBase with Store {
   @observable
-  List<Book> books;
+  List<Book>? books;
 
   @observable
-  Planner currentPlanner;
+  Planner? currentPlanner;
 
   @observable
-  Map<String, List<int>> currentPlannerBookChapters;
+  Map<String, List<int>>? currentPlannerBookChapters;
 
   @action
   void setCurrentPlanner() {
@@ -25,18 +25,18 @@ abstract class _BibleStoreBase with Store {
 
   @action
   void updateCurrentPlannerBookChapters() {
-    currentPlannerBookChapters = currentPlanner.bookChapters;
+    currentPlannerBookChapters = currentPlanner!.bookChapters;
   }
 
   @action
-  void clearChecked({String bookAbbrev}) {
-    currentPlanner.clearChecked(bookAbbrev: bookAbbrev);
+  void clearChecked({String? bookAbbrev}) {
+    currentPlanner?.clearChecked(bookAbbrev: bookAbbrev);
     this.updateCurrentPlannerBookChapters();
   }
 
   @action
-  void toggleChecked({String bookAbbrev, int chapter}) {
-    currentPlanner.toggleChecked(bookAbbrev: bookAbbrev, chapter: chapter);
+  void toggleChecked({required String bookAbbrev, required int chapter}) {
+    currentPlanner?.toggleChecked(bookAbbrev: bookAbbrev, chapter: chapter);
     this.updateCurrentPlannerBookChapters();
   }
 

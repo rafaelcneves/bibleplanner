@@ -1,4 +1,4 @@
-package com.example.bibleplanner
+package com.rafaelneves.mobile.bibleplanner
 
 import io.flutter.embedding.android.FlutterActivity
 

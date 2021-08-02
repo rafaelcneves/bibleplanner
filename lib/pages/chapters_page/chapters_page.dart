@@ -10,20 +10,20 @@ import 'package:get_it/get_it.dart';
 class ChaptersPage extends StatefulWidget {
   final Book book;
 
-  const ChaptersPage({Key key, this.book}) : super(key: key);
+  const ChaptersPage({required this.book});
 
   @override
   _ChaptersPageState createState() => _ChaptersPageState();
 }
 
 class _ChaptersPageState extends State<ChaptersPage> {
-  BibleStore _bibleStore;
-  String _bookAbbrev;
+  late BibleStore _bibleStore;
+  late String _bookAbbrev;
 
   @override
   void initState() {
     _bibleStore = GetIt.instance<BibleStore>();
-    _bookAbbrev = widget.book.abbrev.pt;
+    _bookAbbrev = widget.book.abbrev.pt ?? '';
 
     super.initState();
   }
@@ -63,7 +63,8 @@ class _ChaptersPageState extends State<ChaptersPage> {
           name: 'CheckList',
           builder: (context) {
             List<int> _checked =
-                _bibleStore.currentPlannerBookChapters[_bookAbbrev] ?? [];
+                ((_bibleStore.currentPlannerBookChapters ?? {})[_bookAbbrev] ??
+                    []);
 
             return AnimationLimiter(
               child: GridView.count(
@@ -92,8 +93,8 @@ class _ChaptersPageState extends State<ChaptersPage> {
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
                                           colors: [
-                                              Colors.green[200],
-                                              Colors.green[300]
+                                              Colors.greenAccent,
+                                              Colors.lightGreenAccent,
                                             ])
                                       : null,
                                 ),

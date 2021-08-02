@@ -1,6 +1,6 @@
 class Abbrev {
-  String pt;
-  String en;
+  String? pt;
+  String? en;
 
   Abbrev({this.pt, this.en});
 

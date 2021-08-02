@@ -3,7 +3,6 @@ import 'package:bibleplanner/pages/home_page/home_page.dart';
 import 'package:bibleplanner/stores/bible_store.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
@@ -12,9 +11,10 @@ void main() async {
   var box = await Hive.openBox('planners');
 
   if (!box.containsKey(0)) {
-    Planner planner = Planner()
-      ..name = 'Primeiro'
-      ..bookChapters = {};
+    Planner planner = Planner(
+      name: 'Primeiro',
+      bookChapters: {},
+    );
 
     box.add(planner);
   }
@@ -35,12 +35,10 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
           color: Colors.grey[100],
           elevation: 0,
-          textTheme: TextTheme(
-            headline6: TextStyle(
-              color: Colors.black87,
-              fontFamily: 'Google',
-              fontSize: 20,
-            ),
+          titleTextStyle: TextStyle(
+            color: Colors.black87,
+            fontFamily: 'Google',
+            fontSize: 20,
           ),
           iconTheme: IconThemeData(color: Colors.black87),
         ),

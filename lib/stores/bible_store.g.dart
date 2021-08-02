@@ -12,13 +12,13 @@ mixin _$BibleStore on _BibleStoreBase, Store {
   final _$booksAtom = Atom(name: '_BibleStoreBase.books');
 
   @override
-  List<Book> get books {
+  List<Book>? get books {
     _$booksAtom.reportRead();
     return super.books;
   }
 
   @override
-  set books(List<Book> value) {
+  set books(List<Book>? value) {
     _$booksAtom.reportWrite(value, super.books, () {
       super.books = value;
     });
@@ -27,13 +27,13 @@ mixin _$BibleStore on _BibleStoreBase, Store {
   final _$currentPlannerAtom = Atom(name: '_BibleStoreBase.currentPlanner');
 
   @override
-  Planner get currentPlanner {
+  Planner? get currentPlanner {
     _$currentPlannerAtom.reportRead();
     return super.currentPlanner;
   }
 
   @override
-  set currentPlanner(Planner value) {
+  set currentPlanner(Planner? value) {
     _$currentPlannerAtom.reportWrite(value, super.currentPlanner, () {
       super.currentPlanner = value;
     });
@@ -43,13 +43,13 @@ mixin _$BibleStore on _BibleStoreBase, Store {
       Atom(name: '_BibleStoreBase.currentPlannerBookChapters');
 
   @override
-  Map<String, List<int>> get currentPlannerBookChapters {
+  Map<String, List<int>>? get currentPlannerBookChapters {
     _$currentPlannerBookChaptersAtom.reportRead();
     return super.currentPlannerBookChapters;
   }
 
   @override
-  set currentPlannerBookChapters(Map<String, List<int>> value) {
+  set currentPlannerBookChapters(Map<String, List<int>>? value) {
     _$currentPlannerBookChaptersAtom
         .reportWrite(value, super.currentPlannerBookChapters, () {
       super.currentPlannerBookChapters = value;
@@ -82,7 +82,7 @@ mixin _$BibleStore on _BibleStoreBase, Store {
   }
 
   @override
-  void clearChecked({String bookAbbrev}) {
+  void clearChecked({String? bookAbbrev}) {
     final _$actionInfo = _$_BibleStoreBaseActionController.startAction(
         name: '_BibleStoreBase.clearChecked');
     try {
@@ -93,7 +93,7 @@ mixin _$BibleStore on _BibleStoreBase, Store {
   }
 
   @override
-  void toggleChecked({String bookAbbrev, int chapter}) {
+  void toggleChecked({required String bookAbbrev, required int chapter}) {
     final _$actionInfo = _$_BibleStoreBaseActionController.startAction(
         name: '_BibleStoreBase.toggleChecked');
     try {
