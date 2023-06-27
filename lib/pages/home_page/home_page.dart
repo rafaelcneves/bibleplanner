@@ -1,11 +1,9 @@
 import 'package:bibleplanner/components/alert_component.dart';
 import 'package:bibleplanner/models/book.dart';
 import 'package:bibleplanner/pages/chapters_page/chapters_page.dart';
-import 'package:bibleplanner/stores/bible_store.dart';
+import 'package:bibleplanner/stores/bible_read_progress_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,101 +11,96 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late BibleStore _bibleStore;
-
-  @override
-  void initState() {
-    super.initState();
-    _bibleStore = GetIt.instance<BibleStore>();
-    _bibleStore.setCurrentPlanner();
-
-    if (_bibleStore.books == null) {
-      _bibleStore.loadBooks();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Planner de leitura da Bíblia'),
         centerTitle: true,
-        // leading: IconButton(
-        //   icon: Icon(Icons.menu),
-        //   onPressed: () {},
-        // ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.clear_all),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertComponent(
-                      title: Text('Alerta'),
-                      content: Text(
-                          'Deseja realmente remover todo seu progresso de leitura?'),
-                      confirm: () {
-                        _bibleStore.clearChecked();
-                      },
-                    );
-                  });
-            },
-          )
-        ],
+        actions: [_clearButton(context)],
       ),
-      body: Observer(
-        name: 'BooksList',
-        builder: (context) {
-          List<Book> _books = (_bibleStore.books ?? []);
-          Map<String, List<int>> _bookChapters =
-              (_bibleStore.currentPlannerBookChapters ?? {});
+      body: FutureBuilder(
+        future: fetchBooks(),
+        builder: (context, AsyncSnapshot<List<Book>> snapshot) {
+          List<Book>? _books = snapshot.data ?? List.empty();
 
-          return _books.isNotEmpty
-              ? AnimationLimiter(
-                  child: ListView.builder(
-                    itemCount: _bibleStore.books?.length,
-                    itemBuilder: (context, index) {
-                      Book _book = _books[index];
-                      List<int> _checked = _bookChapters[_book.abbrev.pt] ?? [];
+          return Consumer<BibleReadProgressStore>(
+            builder: (context, _bibleStore, child) {
+              Map<String, List<int>> _bookChapters =
+                  _bibleStore.readProgressChapters;
 
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: Duration(milliseconds: 375),
-                        child: SlideAnimation(
-                          verticalOffset: 50.0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(color: Colors.black12),
-                              ),
+              return GridView.builder(
+                itemCount: _books.length,
+                padding: EdgeInsets.all(8),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 2,
+                ),
+                itemBuilder: (context, index) {
+                  Book _book = _books[index];
+                  List<int> _checked = _bookChapters[_book.abbrev.pt] ?? [];
+
+                  return GestureDetector(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              ChaptersPage(book: _book),
+                          fullscreenDialog: true,
+                        )),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _book.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(fontSize: 18),
                             ),
-                            child: ListTile(
-                              title: Text(_book.name),
-                              subtitle: Text(_book.author),
-                              trailing: Text(
-                                  "${_checked.length}/${_book.chapters.toString()}"),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          ChaptersPage(book: _book),
-                                      fullscreenDialog: true,
-                                    ));
-                              },
-                            ),
-                          ),
+                            Text(
+                                "${_checked.length}/${_book.chapters.toString()}"),
+                          ],
                         ),
-                      );
-                    },
-                  ),
-                )
-              : Center(
-                  child: CircularProgressIndicator(),
-                );
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
         },
       ),
+    );
+  }
+
+  IconButton _clearButton(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.clear_all),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return Consumer<BibleReadProgressStore>(
+              builder: (context, _bibleStore, child) {
+                return AlertComponent(
+                  title: Text('Alerta'),
+                  content: Text(
+                      'Deseja realmente remover todo seu progresso de leitura?'),
+                  confirm: () {
+                    _bibleStore.clearChecked();
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

@@ -18,14 +18,14 @@ class AlertComponent extends StatelessWidget {
       title: title,
       content: content,
       actions: [
-        FlatButton(
+        TextButton(
           child: Text('Cancelar'),
           onPressed: () {
             if (cancel != null) cancel!();
             Navigator.of(context).pop();
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text('Confirmar'),
           onPressed: () {
             confirm();

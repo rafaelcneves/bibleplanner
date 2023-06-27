@@ -1,11 +1,9 @@
 import 'package:bibleplanner/components/alert_component.dart';
 import 'package:bibleplanner/models/book.dart';
-import 'package:bibleplanner/models/planner.dart';
-import 'package:bibleplanner/stores/bible_store.dart';
+import 'package:bibleplanner/stores/bible_read_progress_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 
 class ChaptersPage extends StatefulWidget {
   final Book book;
@@ -17,12 +15,10 @@ class ChaptersPage extends StatefulWidget {
 }
 
 class _ChaptersPageState extends State<ChaptersPage> {
-  late BibleStore _bibleStore;
   late String _bookAbbrev;
 
   @override
   void initState() {
-    _bibleStore = GetIt.instance<BibleStore>();
     _bookAbbrev = widget.book.abbrev.pt ?? '';
 
     super.initState();
@@ -38,33 +34,14 @@ class _ChaptersPageState extends State<ChaptersPage> {
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.clear_all),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertComponent(
-                      title: Text('Alerta'),
-                      content: Text(
-                          'Deseja realmente remover seu progresso de leitura neste livro?'),
-                      confirm: () {
-                        _bibleStore.clearChecked(bookAbbrev: _bookAbbrev);
-                      },
-                    );
-                  });
-            },
-          )
-        ],
+        actions: [_clearButton(context)],
       ),
-      body: OrientationBuilder(builder: (context, orientation) {
-        return Observer(
-          name: 'CheckList',
-          builder: (context) {
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          return Consumer<BibleReadProgressStore>(
+              builder: (context, _bibleStore, child) {
             List<int> _checked =
-                ((_bibleStore.currentPlannerBookChapters ?? {})[_bookAbbrev] ??
-                    []);
+                _bibleStore.readProgressChapters[_bookAbbrev] ?? [];
 
             return AnimationLimiter(
               child: GridView.count(
@@ -115,9 +92,34 @@ class _ChaptersPageState extends State<ChaptersPage> {
                 ),
               ),
             );
+          });
+        },
+      ),
+    );
+  }
+
+  IconButton _clearButton(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.clear_all),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return Consumer<BibleReadProgressStore>(
+              builder: (context, _bibleStore, child) {
+                return AlertComponent(
+                  title: Text('Alerta'),
+                  content: Text(
+                      'Deseja realmente remover seu progresso de leitura neste livro?'),
+                  confirm: () {
+                    _bibleStore.clearChecked(bookAbbrev: _bookAbbrev);
+                  },
+                );
+              },
+            );
           },
         );
-      }),
+      },
     );
   }
 }

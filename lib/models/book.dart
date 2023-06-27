@@ -1,15 +1,12 @@
 import 'dart:convert';
 
 import 'package:bibleplanner/models/abbrev.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 Future<List<Book>> fetchBooks() async {
   final response = await rootBundle.loadString('assets/data/books.json');
 
-  // Use the compute function to run parseBooks in a separate isolate.
-  // return rootBundle.loadString('assets/data/books.json');
-  return compute(parseBooks, response);
+  return parseBooks(response);
 }
 
 // A function that converts a response body into a List<Book>.
@@ -48,9 +45,8 @@ class Book {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.abbrev != null) {
-      data['abbrev'] = this.abbrev.toJson();
-    }
+
+    data['abbrev'] = this.abbrev.toJson();
     data['author'] = this.author;
     data['chapters'] = this.chapters;
     data['group'] = this.group;
