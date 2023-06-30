@@ -19,63 +19,121 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         actions: [_clearButton(context)],
       ),
-      body: FutureBuilder(
-        future: fetchBooks(),
-        builder: (context, AsyncSnapshot<List<Book>> snapshot) {
-          List<Book>? _books = snapshot.data ?? List.empty();
+      body: SingleChildScrollView(
+        child: FutureBuilder(
+          future: fetchBooks(),
+          builder: (context, AsyncSnapshot<List<Book>> snapshot) {
+            List<Book> _books = snapshot.data ?? List.empty();
 
-          return Consumer<BibleReadProgressStore>(
-            builder: (context, _bibleStore, child) {
-              Map<String, List<int>> _bookChapters =
-                  _bibleStore.readProgressChapters;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Em andamento:"),
+                Consumer<BibleReadProgressStore>(
+                  builder: (context, _bibleStore, child) {
+                    List<Book> _inProgress = _books.where((book) {
+                      return _bibleStore.getBookReadProgress(book) > 0 &&
+                          _bibleStore.getBookReadProgress(book) < 1;
+                    }).toList();
 
-              return GridView.builder(
-                itemCount: _books.length,
-                padding: EdgeInsets.all(8),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  childAspectRatio: 2,
+                    return _allBooks(_inProgress);
+                  },
                 ),
-                itemBuilder: (context, index) {
-                  Book _book = _books[index];
-                  List<int> _checked = _bookChapters[_book.abbrev.pt] ?? [];
+                Text("Finalizado:"),
+                Consumer<BibleReadProgressStore>(
+                  builder: (context, _bibleStore, child) {
+                    List<Book> _inProgress = _books.where((book) {
+                      return _bibleStore.getBookReadProgress(book) == 1;
+                    }).toList();
 
-                  return GestureDetector(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              ChaptersPage(book: _book),
-                          fullscreenDialog: true,
-                        )),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _book.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge
-                                  ?.copyWith(fontSize: 18),
-                            ),
-                            Text(
-                                "${_checked.length}/${_book.chapters.toString()}"),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
+                    return _allBooks(_inProgress);
+                  },
+                ),
+                Text("Todos os livros:"),
+                _allBooks(_books),
+              ],
+            );
+          },
+        ),
       ),
+    );
+  }
+
+  Widget _allBooks(List<Book> _books) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: _books.length,
+      padding: EdgeInsets.all(8),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 2,
+      ),
+      itemBuilder: (context, index) {
+        Book _book = _books[index];
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => ChaptersPage(book: _book),
+                  fullscreenDialog: true,
+                ));
+          },
+          child: Card(
+            margin: EdgeInsets.all(0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Consumer<BibleReadProgressStore>(
+                    builder: (context, _bibleStore, child) {
+                      Map<String, List<int>> _bookChapters =
+                          _bibleStore.readProgressChapters;
+                      List<int> _checked = _bookChapters[_book.abbrev.pt] ?? [];
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _book.name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(fontSize: 18),
+                          ),
+                          Text("${_checked.length}/${_book.chapters}"),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                Consumer<BibleReadProgressStore>(
+                  builder: (context, _bibleStore, child) {
+                    Map<String, List<int>> _bookChapters =
+                        _bibleStore.readProgressChapters;
+                    List<int> _checked = _bookChapters[_book.abbrev.pt] ?? [];
+                    return Opacity(
+                      opacity: 0.5,
+                      child: LinearProgressIndicator(
+                        value: _checked.length / _book.chapters,
+                        backgroundColor: Colors.white,
+                        color: Colors.green,
+                        minHeight: 10,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
