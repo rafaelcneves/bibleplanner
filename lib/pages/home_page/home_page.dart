@@ -11,6 +11,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<bool> expanded = [true, false, true];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,33 +27,62 @@ class _HomePageState extends State<HomePage> {
           builder: (context, AsyncSnapshot<List<Book>> snapshot) {
             List<Book> _books = snapshot.data ?? List.empty();
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Em andamento:"),
-                Consumer<BibleReadProgressStore>(
-                  builder: (context, _bibleStore, child) {
-                    List<Book> _inProgress = _books.where((book) {
-                      return _bibleStore.getBookReadProgress(book) > 0 &&
-                          _bibleStore.getBookReadProgress(book) < 1;
-                    }).toList();
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ExpansionPanelList(
+                expandedHeaderPadding: EdgeInsets.zero,
+                expansionCallback: (int index, bool isExpanded) {
+                  setState(() {
+                    expanded[index] = !expanded[index];
+                  });
+                },
+                children: [
+                  ExpansionPanel(
+                    backgroundColor: Colors.grey[50],
+                    isExpanded: expanded[0],
+                    canTapOnHeader: true,
+                    headerBuilder: (_, __) {
+                      return ListTile(title: Text("Em andamento"));
+                    },
+                    body: Consumer<BibleReadProgressStore>(
+                      builder: (context, _bibleStore, child) {
+                        List<Book> _inProgress = _books.where((book) {
+                          return _bibleStore.getBookReadProgress(book) > 0 &&
+                              _bibleStore.getBookReadProgress(book) < 1;
+                        }).toList();
 
-                    return _allBooks(_inProgress);
-                  },
-                ),
-                Text("Finalizado:"),
-                Consumer<BibleReadProgressStore>(
-                  builder: (context, _bibleStore, child) {
-                    List<Book> _inProgress = _books.where((book) {
-                      return _bibleStore.getBookReadProgress(book) == 1;
-                    }).toList();
+                        return _allBooks(_inProgress);
+                      },
+                    ),
+                  ),
+                  ExpansionPanel(
+                    backgroundColor: Colors.grey[50],
+                    isExpanded: expanded[1],
+                    canTapOnHeader: true,
+                    headerBuilder: (_, __) {
+                      return ListTile(title: Text("Finalizado"));
+                    },
+                    body: Consumer<BibleReadProgressStore>(
+                      builder: (context, _bibleStore, child) {
+                        List<Book> _inProgress = _books.where((book) {
+                          return _bibleStore.getBookReadProgress(book) == 1;
+                        }).toList();
 
-                    return _allBooks(_inProgress);
-                  },
-                ),
-                Text("Todos os livros:"),
-                _allBooks(_books),
-              ],
+                        return _allBooks(_inProgress);
+                      },
+                    ),
+                  ),
+                  ExpansionPanel(
+                    backgroundColor: Colors.grey[50],
+                    isExpanded: expanded[2],
+                    canTapOnHeader: true,
+                    headerBuilder: (_, __) {
+                      return ListTile(title: Text("Todos os livros"));
+                    },
+                    body: _allBooks(_books),
+                  ),
+                ],
+              ),
             );
           },
         ),
