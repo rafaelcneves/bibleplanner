@@ -37,55 +37,92 @@ class _HomePageState extends State<HomePage> {
                   });
                 },
                 children: [
-                  ExpansionPanel(
-                    backgroundColor: Colors.grey[50],
-                    isExpanded: expanded[0],
-                    canTapOnHeader: true,
-                    headerBuilder: (_, __) {
-                      return ListTile(title: Text("Em andamento"));
-                    },
-                    body: Consumer<BibleReadProgressStore>(
-                      builder: (context, _bibleStore, child) {
-                        List<Book> _inProgress = _books.where((book) {
-                          return _bibleStore.getBookReadProgress(book) > 0 &&
-                              _bibleStore.getBookReadProgress(book) < 1;
-                        }).toList();
-
-                        return _allBooks(_inProgress);
-                      },
-                    ),
-                  ),
-                  ExpansionPanel(
-                    backgroundColor: Colors.grey[50],
-                    isExpanded: expanded[1],
-                    canTapOnHeader: true,
-                    headerBuilder: (_, __) {
-                      return ListTile(title: Text("Finalizado"));
-                    },
-                    body: Consumer<BibleReadProgressStore>(
-                      builder: (context, _bibleStore, child) {
-                        List<Book> _inProgress = _books.where((book) {
-                          return _bibleStore.getBookReadProgress(book) == 1;
-                        }).toList();
-
-                        return _allBooks(_inProgress);
-                      },
-                    ),
-                  ),
-                  ExpansionPanel(
-                    backgroundColor: Colors.grey[50],
-                    isExpanded: expanded[2],
-                    canTapOnHeader: true,
-                    headerBuilder: (_, __) {
-                      return ListTile(title: Text("Todos os livros"));
-                    },
-                    body: _allBooks(_books),
-                  ),
+                  _inProgressPanel(_books),
+                  _completedPanel(_books),
+                  _allBooksPanel(_books),
                 ],
               ),
             );
           },
         ),
+      ),
+    );
+  }
+
+  ExpansionPanel _allBooksPanel(List<Book> _books) {
+    return ExpansionPanel(
+      backgroundColor: Colors.grey[50],
+      isExpanded: expanded[2],
+      canTapOnHeader: true,
+      headerBuilder: (_, __) {
+        return ListTile(title: Text("Todos os livros"));
+      },
+      body: Column(
+        children: [
+          Text("teste"),
+          _allBooks(_books),
+        ],
+      ),
+    );
+  }
+
+  ExpansionPanel _completedPanel(List<Book> _books) {
+    return ExpansionPanel(
+      backgroundColor: Colors.grey[50],
+      isExpanded: expanded[1],
+      canTapOnHeader: true,
+      headerBuilder: (_, __) {
+        return ListTile(title: Text("Finalizado"));
+      },
+      body: Consumer<BibleReadProgressStore>(
+        builder: (context, _bibleStore, child) {
+          List<Book> _completed = _books.where((book) {
+            return _bibleStore.getBookReadProgress(book) == 1;
+          }).toList();
+
+          return (_completed.length == 0)
+              ? _emptyPanel(
+                  "Finalize uma leitura para mostrar \nseu progresso aqui.")
+              : _allBooks(_completed);
+        },
+      ),
+    );
+  }
+
+  ExpansionPanel _inProgressPanel(List<Book> _books) {
+    return ExpansionPanel(
+      backgroundColor: Colors.grey[50],
+      isExpanded: expanded[0],
+      canTapOnHeader: true,
+      headerBuilder: (_, __) {
+        return ListTile(title: Text("Em andamento"));
+      },
+      body: Consumer<BibleReadProgressStore>(
+        builder: (context, _bibleStore, child) {
+          List<Book> _inProgress = _books.where((book) {
+            return _bibleStore.getBookReadProgress(book) > 0 &&
+                _bibleStore.getBookReadProgress(book) < 1;
+          }).toList();
+
+          return (_inProgress.length == 0)
+              ? _emptyPanel(
+                  "Inicie uma leitura para mostrar \nseu progresso aqui.")
+              : _allBooks(_inProgress);
+        },
+      ),
+    );
+  }
+
+  Padding _emptyPanel(String text) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Opacity(
+        opacity: .7,
+        child: Center(
+            child: Text(
+          text,
+          textAlign: TextAlign.center,
+        )),
       ),
     );
   }
